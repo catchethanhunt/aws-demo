@@ -1,7 +1,19 @@
 version: 0.2
 
 phases:
+
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR
+      - aws ecr get-login-password --region ap-south-2 | docker login --username AWS --password-stdin 511417195452.dkr.ecr.ap-south-2.amazonaws.com
+
   build:
     commands:
-      - echo "Build Started"
-      - echo "Build Completed"
+      - echo Docker Build Started
+      - docker build -t aws-demo .
+      - docker tag aws-demo:latest 511417195452.dkr.ecr.ap-south-2.amazonaws.com/aws-demo:latest
+
+  post_build:
+    commands:
+      - echo Pushing Docker Image
+      - docker push 511417195452.dkr.ecr.ap-south-2.amazonaws.com/aws-demo:latest
